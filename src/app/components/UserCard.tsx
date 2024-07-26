@@ -4,7 +4,7 @@ import {Card, CardHeader, CardBody, CardFooter} from "@nextui-org/card";
 import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input} from "@nextui-org/react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
-import {GetMe, Login, Logout} from "@src/services/user";
+import {GetMe, Login, Logout, Register} from "@src/services/user";
 
 interface UserCardProp {
   login: boolean,
@@ -38,14 +38,16 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
   const {isOpen: isRegisterOpen, onOpen: onRegisterOpen, onOpenChange: onRegisterOpenChange, onClose: onRegisterClose} = useDisclosure();
   const {isOpen: isLogoutOpen, onOpen: onLogoutOpen, onOpenChange: onLogoutOpenChange, onClose: onLogoutClose} = useDisclosure();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     const updateUser = async () => {
       const result = await GetMe();
       if (result.ok) {
         setUser({
-          username: 'User',
-          studentId: '114514',
-          avatar: 'User'
+          username: result.me.username,
+          studentId: result.me.studentId,
+          avatar: result.me.username
         })
         setLogin(true);
       }
@@ -62,6 +64,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
   }, [login]);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     const result = await Login(loginForm.username, loginForm.studentId, loginForm.password);
     if (result.ok) {
       setLogin(true);
@@ -70,18 +73,37 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
     else {
       setLoginMessage(result.message);
     }
+    setIsLoading(false);
   }
 
   const handleRegister = async () => {
-
+    setIsLoading(true);
+    const tmpUsername = registerForm.username;
+    const tmpStudentId = registerForm.studentId;
+    const result = await Register(tmpUsername, tmpStudentId, registerForm.password, registerForm.repeatPassword);
+    if (result.ok) {
+      onRegisterClose();
+      onLoginOpen();
+      setLoginForm({
+        username: tmpUsername,
+        studentId: tmpStudentId,
+        password: ''
+      })
+    }
+    else {
+      setRegisterMessage(result.message);
+    }
+    setIsLoading(false);
   }
 
   const handleLogout = async () => {
+    setIsLoading(true);
     const result = await Logout();
     if (result.ok) {
       setLogin(false);
       onLogoutClose();
     }
+    setIsLoading(false);
   }
 
   return (
@@ -125,19 +147,19 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
               <ModalHeader>登录</ModalHeader>
               <ModalBody>
                 <p className="text-red-500">{loginMessage}</p>
-                <Input label={"用户名"} isRequired onChange={(event) => {
+                <Input label={"用户名"} defaultValue={loginForm.username} isRequired onChange={(event) => {
                   loginForm.username = event.target.value;
                 }}/>
-                <Input label={"学号"} isRequired onChange={(event) => {
+                <Input label={"学号"} defaultValue={loginForm.studentId} isRequired onChange={(event) => {
                   loginForm.studentId = event.target.value;
                 }}/>
-                <Input label={"密码"} type={"password"} isRequired onChange={(event) => {
+                <Input label={"密码"} defaultValue={loginForm.password} type={"password"} isRequired onChange={(event) => {
                   loginForm.password = event.target.value;
                 }}/>
               </ModalBody>
               <ModalFooter>
                 <Button color="default" onPress={onClose}>取消</Button>
-                <Button color="primary" onPress={handleLogin}>登录</Button>
+                <Button color="primary" onPress={handleLogin} isLoading={isLoading}>登录</Button>
               </ModalFooter>
             </div>
           )}
@@ -151,22 +173,22 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
               <ModalHeader>注册</ModalHeader>
               <ModalBody>
                 <p className="text-red-500">{registerMessage}</p>
-                <Input label={"用户名"} isRequired onChange={(event) => {
+                <Input label={"用户名"} defaultValue={registerForm.username} isRequired onChange={(event) => {
                   registerForm.username = event.target.value;
                 }}/>
-                <Input label={"学号"} isRequired onChange={(event) => {
+                <Input label={"学号"} defaultValue={registerForm.studentId} isRequired onChange={(event) => {
                   registerForm.studentId = event.target.value;
                 }}/>
-                <Input label={"密码"} type={"password"} isRequired onChange={(event) => {
+                <Input label={"密码"} defaultValue={registerForm.password} type={"password"} isRequired onChange={(event) => {
                   registerForm.password = event.target.value;
                 }}/>
-                <Input label={"重复密码"} type={"password"} isRequired onChange={(event) => {
+                <Input label={"重复密码"} defaultValue={registerForm.repeatPassword} type={"password"} isRequired onChange={(event) => {
                   registerForm.repeatPassword = event.target.value;
                 }}/>
               </ModalBody>
               <ModalFooter>
                 <Button color="default" onPress={onClose}>取消</Button>
-                <Button color="primary" onPress={handleRegister}>注册</Button>
+                <Button color="primary" onPress={handleRegister} isLoading={isLoading}>注册</Button>
               </ModalFooter>
             </div>
           )}
@@ -183,7 +205,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
               </ModalBody>
               <ModalFooter>
                 <Button color="default" onPress={onClose}>取消</Button>
-                <Button color="danger" onPress={handleLogout}>确定</Button>
+                <Button color="danger" onPress={handleLogout} isLoading={isLoading}>确定</Button>
               </ModalFooter>
             </div>
           )}
