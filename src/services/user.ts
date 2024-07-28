@@ -1,5 +1,4 @@
-
-const urlHeader = 'http://localhost:8080/api'
+import {urlHeader} from "@src/utils/common";
 
 interface UserAuthResponse {
   ok: boolean,
@@ -98,6 +97,7 @@ export async function Login(username: string, studentId: string, password: strin
     }
   }
   catch (e) {
+    console.log(e.message);
     return {
       ok: false,
       message: e.message
@@ -187,6 +187,7 @@ export async function Register(username: string, studentId: string, password: st
     }
   }
   catch (e) {
+    console.log(e.message);
     return {
       ok: false,
       message: e.message
@@ -210,6 +211,7 @@ export async function Logout(): Promise<UserAuthResponse> {
     }
   }
   catch (e) {
+    console.log(e.message);
     return {
       ok: false,
       message: e.message
@@ -243,6 +245,7 @@ export async function GetMe(): Promise<UserGetMeResponse> {
     }
   }
   catch (e) {
+    console.log(e.message);
     return {
       ok: false,
       me: null

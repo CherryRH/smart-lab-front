@@ -1,7 +1,7 @@
 'use client';
 
 import {Card, CardHeader, CardBody, CardFooter} from "@nextui-org/card";
-import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input} from "@nextui-org/react";
+import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Tooltip} from "@nextui-org/react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import {GetMe, Login, Logout, Register} from "@src/services/user";
@@ -41,7 +41,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const updateUser = async () => {
+    const getUser = async () => {
       const result = await GetMe();
       if (result.ok) {
         setUser({
@@ -60,7 +60,8 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
         setLogin(false);
       }
     }
-    updateUser();
+
+    getUser();
   }, [login]);
 
   const handleLogin = async () => {
