@@ -2,7 +2,6 @@
 
 import LabSideBar from "@src/app/components/LabSideBar";
 import DashBoard from "@src/app/components/DashBoard";
-import {useState} from "react";
 
 export default function Home() {
 

@@ -1,8 +1,16 @@
 import {urlHeader} from "@src/utils/common";
 
+export interface LabItem {
+  id: number,
+  title: string,
+  testTubeRacks: any[],
+  createdAt: Date,
+  updatedAt: Date
+}
+
 interface GetLabsResponse {
   ok: boolean,
-  labs: any[]
+  labs: LabItem[]
 }
 
 export async function GetLabs(): Promise<GetLabsResponse> {
@@ -30,8 +38,13 @@ export async function GetLabs(): Promise<GetLabsResponse> {
       }
     }
   }
-  catch (e) {
-    console.log(e.message);
+  catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error(e.message);
+    }
+    else {
+      console.error('Unknown error');
+    }
     return {
       ok: false,
       labs: []
