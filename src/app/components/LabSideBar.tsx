@@ -6,6 +6,7 @@ import LabList from "@src/app/components/LabList";
 import React, {useState} from "react";
 
 const LabSideBar: React.FC = () => {
+  // 登录状态
   const [login, setLogin] = useState(false);
 
   return (

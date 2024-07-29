@@ -62,7 +62,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
     }
 
     getUser();
-  }, [login]);
+  }, [login, setLogin]);
 
   const handleLogin = async () => {
     setIsLoading(true);

@@ -8,7 +8,7 @@ import {
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import LabCard from "@src/app/components/LabCard";
-import {GetLabs} from "@src/services/lab";
+import {GetLabs, LabItem} from "@src/services/lab";
 import {
   ListAlt,
   Remove,
@@ -26,19 +26,9 @@ interface LabListProp {
   login: boolean
 }
 
-interface LabItem {
-  id: number,
-  title: string,
-  testTubeRacks: any[],
-  createdAt: Date,
-  updatedAt: Date
-}
-
 const LabList: React.FC<LabListProp> = ({login}) => {
   // 实验列表数据
-  const [labs, setLabs] = useState([]);
-  // 是否显示实验列表
-  const [showLabList, setShowLabList] = useState(false);
+  const [labs, setLabs] = useState<LabItem[]>([]);
   // 实验数据
   const [lab, setLab] = useState({
     id: 0,
