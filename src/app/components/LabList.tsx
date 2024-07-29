@@ -8,7 +8,7 @@ import {
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import LabCard from "@src/app/components/LabCard";
-import {GetLabs, LabItem} from "@src/services/lab";
+import {CreateLab, DeleteLab, GetLabs, LabItem, UpdateLabTitle} from "@src/services/lab";
 import {
   ListAlt,
   Remove,
@@ -21,6 +21,7 @@ import {
   SystemUpdateAlt, Add
 } from "@mui/icons-material";
 import {format} from "date-fns";
+import {Login} from "@src/services/user";
 
 interface LabListProp {
   login: boolean
@@ -41,19 +42,39 @@ const LabList: React.FC<LabListProp> = ({login}) => {
   const [labMessage, setLabMessage] = useState('');
 
   const {isOpen: isLabListOpen, onOpen: onLabListOpen, onOpenChange: onLabListOpenChange, onClose: onLabListClose} = useDisclosure();
+  const {isOpen: isCreateLabFormOpen, onOpen: onCreateLabFormOpen, onOpenChange: onCreateLabFormOpenChange, onClose: onCreateLabFormClose} = useDisclosure();
+  const {isOpen: isUpdateLabFormOpen, onOpen: onUpdateLabFormOpen, onOpenChange: onUpdateLabFormOpenChange, onClose: onUpdateLabFormClose} = useDisclosure();
+  const {isOpen: isDeleteLabOpen, onOpen: onDeleteLabOpen, onOpenChange: onDeleteLabOpenChange, onClose: onDeleteLabClose} = useDisclosure();
+
+  // 创建实验表单
+  const [createLabForm, setCreateLabForm] = useState({
+    title: ''
+  })
+
+  // 更新实验表单
+  const [updateLabForm, setUpdateLabForm] = useState({
+    id: 0,
+    title: ''
+  })
+
+  // 删除实验表单
+  const [deleteLabForm, setDeleteLabForm] = useState({
+    id: 0,
+    title: ''
+  })
+
+  const getLabs = async () => {
+    const result = await GetLabs();
+    if (result.ok) {
+      setLabListMessage('');
+      setLabs(result.labs);
+    }
+    else {
+      setLabListMessage('获取实验列表数据失败');
+    }
+  }
 
   useEffect(() => {
-    const getLabs = async () => {
-      const result = await GetLabs();
-      if (result.ok) {
-        setLabListMessage('');
-        setLabs(result.labs);
-      }
-      else {
-        setLabListMessage('获取实验列表数据失败');
-      }
-    }
-
     if (login) {
       getLabs();
     }
@@ -92,14 +113,78 @@ const LabList: React.FC<LabListProp> = ({login}) => {
             <Button isIconOnly color="default"><SystemUpdateAlt/></Button>
           </Tooltip>
           <Tooltip content='编辑实验信息'>
-            <Button isIconOnly color="default"><Edit/></Button>
+            <Button isIconOnly color="default" onClick={() => {
+              setUpdateLabForm({
+                id: item.id,
+                title: item.title
+              });
+              onUpdateLabFormOpen();
+            }}><Edit/></Button>
           </Tooltip>
           <Tooltip content='删除实验'>
-            <Button isIconOnly color="danger"><Delete/></Button>
+            <Button isIconOnly color="danger" onClick={() => {
+              setDeleteLabForm({
+                id: item.id,
+                title: item.title
+              });
+              onDeleteLabOpen();
+            }}><Delete/></Button>
           </Tooltip>
         </div>
       )
     }
+  }
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCreateLab = async () => {
+    setIsLoading(true);
+    const result = await CreateLab(createLabForm.title);
+    if (result.ok) {
+      await getLabs();
+      onCreateLabFormClose();
+      setCreateLabForm({
+        title: ''
+      })
+    }
+    else {
+      setLabListMessage(result.message);
+    }
+    setIsLoading(false);
+  }
+
+  const handleDeleteLab = async (id: number) => {
+    setIsLoading(true);
+    const result = await DeleteLab(id);
+    if (result) {
+      await getLabs();
+      onDeleteLabClose();
+      setDeleteLabForm({
+        id: 0,
+        title: ''
+      })
+    }
+    else {
+      setLabListMessage('删除失败');
+    }
+    setIsLoading(false);
+  }
+
+  const handleUpdateLab = async (id: number, title: string) => {
+    setIsLoading(true);
+    const result = await UpdateLabTitle(id, title);
+    if (result) {
+      await getLabs();
+      onUpdateLabFormClose();
+      setUpdateLabForm({
+        id: 0,
+        title: ''
+      })
+    }
+    else {
+      setLabListMessage('修改失败');
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -131,10 +216,9 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         <ModalContent>
           {(onClose) => (
             <div>
-              <ModalHeader>
-                <p>实验列表</p>
-              </ModalHeader>
+              <ModalHeader>实验列表</ModalHeader>
               <ModalBody>
+                <p className="text-red-500">{labListMessage}</p>
                 <Table>
                   <TableHeader columns={columns}>
                     {(column) => (<TableColumn key={column.key}>{column.label}</TableColumn>)}
@@ -149,9 +233,64 @@ const LabList: React.FC<LabListProp> = ({login}) => {
                 </Table>
               </ModalBody>
               <ModalFooter>
-                <Tooltip content='新建实验'>
-                  <Button isIconOnly color="primary"><Add/></Button>
+              <Tooltip content='新建实验'>
+                  <Button isIconOnly color="primary" onClick={onCreateLabFormOpen}><Add/></Button>
                 </Tooltip>
+              </ModalFooter>
+            </div>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isCreateLabFormOpen} onOpenChange={onCreateLabFormOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <div>
+              <ModalHeader>新建实验</ModalHeader>
+              <ModalBody>
+                <Input label={"标题"} defaultValue={createLabForm.title} isRequired onChange={(event) => {
+                  createLabForm.title = event.target.value;
+                }}/>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" onClick={onClose}>取消</Button>
+                <Button color="primary" isLoading={isLoading} onClick={handleCreateLab}>创建</Button>
+              </ModalFooter>
+            </div>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isUpdateLabFormOpen} onOpenChange={onUpdateLabFormOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <div>
+              <ModalHeader>编辑实验信息</ModalHeader>
+              <ModalBody>
+                <Input label={"标题"} defaultValue={updateLabForm.title} isRequired onChange={(event) => {
+                  updateLabForm.title = event.target.value;
+                }}/>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" onClick={onClose}>取消</Button>
+                <Button color="primary" isLoading={isLoading} onClick={() => handleUpdateLab(updateLabForm.id, updateLabForm.title)}>更新</Button>
+              </ModalFooter>
+            </div>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isDeleteLabOpen} onOpenChange={onDeleteLabOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <div>
+              <ModalHeader>删除实验</ModalHeader>
+              <ModalBody>
+                <p>{`确定要删除实验[${deleteLabForm.title}]吗？删除后数据无法恢复。`}</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" onPress={onClose}>取消</Button>
+                <Button color="danger" onPress={() => handleDeleteLab(deleteLabForm.id)} isLoading={isLoading}>确定</Button>
               </ModalFooter>
             </div>
           )}
