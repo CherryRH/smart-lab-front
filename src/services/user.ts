@@ -191,3 +191,33 @@ export async function GetMe(): Promise<UserGetMeResponse> {
     }
   }
 }
+
+export async function UpdateCurrentLabId(currentLabId: number): Promise<boolean> {
+  try {
+    const response = await fetch(`${urlHeader}/user/currentLabId?currentLabId=${currentLabId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include"
+    });
+    const result = await response.json();
+    console.log(result);
+
+    if (response.ok) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error(e.message);
+    }
+    else {
+      console.error('Unknown error');
+    }
+    return false;
+  }
+}

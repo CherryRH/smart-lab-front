@@ -8,10 +8,11 @@ import {GetMe, Login, Logout, Register} from "@src/services/user";
 
 interface UserCardProp {
   login: boolean,
-  setLogin: Function
+  setLogin: Function,
+  setCurrentLabId: Function
 }
 
-const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
+const UserCard: React.FC<UserCardProp> = ({login, setLogin, setCurrentLabId}) => {
 
   const [user, setUser] = useState({
     username: '',
@@ -49,6 +50,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
           studentId: result.me.studentId,
           avatar: result.me.username
         })
+        setCurrentLabId(result.me.currentLabId);
         setLogin(true);
       }
       else {
@@ -57,12 +59,13 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
           studentId: '',
           avatar: ''
         })
+        setCurrentLabId(0);
         setLogin(false);
       }
     }
 
     getUser();
-  }, [login, setLogin]);
+  }, [login, setCurrentLabId, setLogin]);
 
   const handleLogin = async () => {
     setIsLoading(true);
@@ -141,7 +144,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
         </div>
       </CardHeader>
 
-      <Modal isOpen={isLoginOpen} onOpenChange={onLoginOpenChange}>
+      <Modal isOpen={isLoginOpen} onOpenChange={onLoginOpenChange} aria-label='loginModal'>
         <ModalContent>
           {(onClose) => (
             <div>
@@ -167,7 +170,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isRegisterOpen} onOpenChange={onRegisterOpenChange}>
+      <Modal isOpen={isRegisterOpen} onOpenChange={onRegisterOpenChange} aria-label='registerModal'>
         <ModalContent>
           {(onClose) => (
             <div>
@@ -196,7 +199,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin}) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isLogoutOpen} onOpenChange={onLogoutOpenChange}>
+      <Modal isOpen={isLogoutOpen} onOpenChange={onLogoutOpenChange} aria-label='logoutModal'>
         <ModalContent>
           {(onClose) => (
             <div>
