@@ -8,6 +8,8 @@ import React, {useState} from "react";
 const LabSideBar: React.FC = () => {
   // 登录状态
   const [login, setLogin] = useState(false);
+  // 当前实验id
+  const [currentLabId, setCurrentLabId] = useState(0);
 
   return (
     <div className="w-1/4 h-full min-w-fit flex flex-col gap-3">
@@ -16,11 +18,11 @@ const LabSideBar: React.FC = () => {
         <p className="text-xl font-light text-blue-500">2024-LoT</p>
       </div>
 
-      <UserCard login={login} setLogin={setLogin}/>
+      <UserCard login={login} setLogin={setLogin} setCurrentLabId={setCurrentLabId}/>
 
       <Divider/>
 
-      <LabList login={login}/>
+      <LabList login={login} currentLabId={currentLabId} setCurrentLabId={setCurrentLabId}/>
     </div>
   )
 }

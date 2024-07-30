@@ -8,7 +8,7 @@ import {
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import LabCard from "@src/app/components/LabCard";
-import {CreateLab, DeleteLab, GetLabs, LabItem, UpdateLabTitle} from "@src/services/lab";
+import {CreateLab, DeleteLab, GetLabById, GetLabs, LabItem, UpdateLabTitle} from "@src/services/lab";
 import {
   ListAlt,
   Remove,
@@ -21,23 +21,35 @@ import {
   SystemUpdateAlt, Add
 } from "@mui/icons-material";
 import {format} from "date-fns";
-import {Login} from "@src/services/user";
+import {Login, UpdateCurrentLabId} from "@src/services/user";
 
 interface LabListProp {
-  login: boolean
+  login: boolean,
+  currentLabId: number,
+  setCurrentLabId: Function
 }
 
-const LabList: React.FC<LabListProp> = ({login}) => {
+const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) => {
   // 实验列表数据
   const [labs, setLabs] = useState<LabItem[]>([]);
   // 实验数据
-  const [lab, setLab] = useState({
+  const [lab, setLab] = useState<LabItem>({
     id: 0,
-    title: '实验',
+    title: '',
     testTubeRacks: [],
     createdAt: new Date(2024, 7, 1),
     updatedAt: new Date(2024, 7, 1)
   })
+  const setLabInit = () => {
+    setLab({
+      id: 0,
+      title: '',
+      testTubeRacks: [],
+      createdAt: new Date(2024, 7, 1),
+      updatedAt: new Date(2024, 7, 1)
+    });
+  }
+
   const [labListMessage, setLabListMessage] = useState('');
   const [labMessage, setLabMessage] = useState('');
 
@@ -83,6 +95,34 @@ const LabList: React.FC<LabListProp> = ({login}) => {
     }
   }, [login]);
 
+  const getCurrentLab = async (id: number) => {
+    if (id > 0) {
+      const result = await GetLabById(id);
+      if (result.ok && result.lab) {
+        setLab({
+          id: result.lab.id,
+          title: result.lab.title,
+          testTubeRacks: result.lab.testTubeRacks,
+          createdAt: result.lab.createdAt,
+          updatedAt: result.lab.updatedAt
+        });
+        setLabMessage('');
+      }
+      else {
+        setLabMessage('获取实验数据失败');
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (login) {
+      getCurrentLab(currentLabId);
+    }
+    else {
+      setLabInit();
+    }
+  }, [currentLabId, login]);
+
   const columns = [
     {
       key: "title",
@@ -110,10 +150,13 @@ const LabList: React.FC<LabListProp> = ({login}) => {
       case 'actions': return (
         <div className='flex flex-row gap-3 items-center'>
           <Tooltip content='加载到实验面板'>
-            <Button isIconOnly color="default"><SystemUpdateAlt/></Button>
+            <Button isIconOnly color="default" aria-label='加载到实验面板' onClick={() => {
+              handleLoadLab(item);
+              onLabListClose();
+            }}><SystemUpdateAlt/></Button>
           </Tooltip>
           <Tooltip content='编辑实验信息'>
-            <Button isIconOnly color="default" onClick={() => {
+            <Button isIconOnly color="default" aria-label='编辑实验信息' onClick={() => {
               setUpdateLabForm({
                 id: item.id,
                 title: item.title
@@ -122,7 +165,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
             }}><Edit/></Button>
           </Tooltip>
           <Tooltip content='删除实验'>
-            <Button isIconOnly color="danger" onClick={() => {
+            <Button isIconOnly color="danger" aria-label='删除实验' onClick={() => {
               setDeleteLabForm({
                 id: item.id,
                 title: item.title
@@ -163,6 +206,12 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         id: 0,
         title: ''
       })
+      // 如果删除的是用户当前实验
+      if (id === currentLabId) {
+        setLabInit();
+        setCurrentLabId(0);
+        await UpdateCurrentLabId(0);
+      }
     }
     else {
       setLabListMessage('删除失败');
@@ -180,11 +229,24 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         id: 0,
         title: ''
       })
+      // 如果是当前实验，则更新页面
+      if (id === currentLabId) {
+        await getCurrentLab(currentLabId);
+      }
     }
     else {
       setLabListMessage('修改失败');
     }
     setIsLoading(false);
+  }
+
+  const handleLoadLab = async (lab: LabItem) => {
+    setLab({
+      ...lab
+    });
+    setCurrentLabId(lab.id);
+    // 同步后端的当前实验id
+    await UpdateCurrentLabId(lab.id);
   }
 
   return (
@@ -193,7 +255,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         <p>实验数据面板</p>
         <div className="flex flex-row gap-3 items-center">
           <Tooltip content='打开实验列表'>
-            <Button isIconOnly color="default" onClick={onLabListOpen}><ListAlt/></Button>
+            <Button isIconOnly color="default" aria-label='打开实验列表' onClick={onLabListOpen}><ListAlt/></Button>
           </Tooltip>
           <Dropdown>
             <DropdownTrigger>
@@ -209,10 +271,9 @@ const LabList: React.FC<LabListProp> = ({login}) => {
       </div>
 
       <p className="text-red-500">{labMessage}</p>
-      <LabCard id={lab.id} title={lab.title} testTubeRacks={lab.testTubeRacks} createdAt={lab.createdAt}
-               updatedAt={lab.updatedAt}/>
+      <LabCard lab={lab}/>
 
-      <Modal isOpen={isLabListOpen} onOpenChange={onLabListOpenChange} size='5xl'>
+      <Modal isOpen={isLabListOpen} onOpenChange={onLabListOpenChange} size='5xl' aria-label='labListModal'>
         <ModalContent>
           {(onClose) => (
             <div>
@@ -234,7 +295,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
               </ModalBody>
               <ModalFooter>
               <Tooltip content='新建实验'>
-                  <Button isIconOnly color="primary" onClick={onCreateLabFormOpen}><Add/></Button>
+                  <Button isIconOnly color="primary" aria-label='新建实验' onClick={onCreateLabFormOpen}><Add/></Button>
                 </Tooltip>
               </ModalFooter>
             </div>
@@ -242,7 +303,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isCreateLabFormOpen} onOpenChange={onCreateLabFormOpenChange}>
+      <Modal isOpen={isCreateLabFormOpen} onOpenChange={onCreateLabFormOpenChange} aria-label='createLabFormModal'>
         <ModalContent>
           {(onClose) => (
             <div>
@@ -261,7 +322,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isUpdateLabFormOpen} onOpenChange={onUpdateLabFormOpenChange}>
+      <Modal isOpen={isUpdateLabFormOpen} onOpenChange={onUpdateLabFormOpenChange} aria-label='updateLabFormModal'>
         <ModalContent>
           {(onClose) => (
             <div>
@@ -280,7 +341,7 @@ const LabList: React.FC<LabListProp> = ({login}) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={isDeleteLabOpen} onOpenChange={onDeleteLabOpenChange}>
+      <Modal isOpen={isDeleteLabOpen} onOpenChange={onDeleteLabOpenChange} aria-label='deleteLabModal'>
         <ModalContent>
           {(onClose) => (
             <div>

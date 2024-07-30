@@ -13,6 +13,11 @@ interface GetLabsResponse {
   labs: LabItem[]
 }
 
+interface GetLabResponse {
+  ok: boolean,
+  lab: LabItem | null
+}
+
 interface CreateLabResponse {
   ok: boolean,
   message: string
@@ -53,6 +58,45 @@ export async function GetLabs(): Promise<GetLabsResponse> {
     return {
       ok: false,
       labs: []
+    }
+  }
+}
+
+export async function GetLabById(id: number): Promise<GetLabResponse> {
+  try {
+    const response = await fetch(`${urlHeader}/lab?id=${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: "include"
+    });
+    const result = await response.json();
+    console.log(result);
+
+    if (response.ok) {
+      return {
+        ok: true,
+        lab: result.lab
+      }
+    }
+    else {
+      return {
+        ok: false,
+        lab: null
+      }
+    }
+  }
+  catch (e: unknown) {
+    if (e instanceof Error) {
+      console.error(e.message);
+    }
+    else {
+      console.error('Unknown error');
+    }
+    return {
+      ok: false,
+      lab: null
     }
   }
 }
