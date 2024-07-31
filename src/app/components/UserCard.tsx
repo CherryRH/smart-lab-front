@@ -44,7 +44,7 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin, setCurrentLabId}) =>
   useEffect(() => {
     const getUser = async () => {
       const result = await GetMe();
-      if (result.ok) {
+      if (result.ok && result.me) {
         setUser({
           username: result.me.username,
           studentId: result.me.studentId,

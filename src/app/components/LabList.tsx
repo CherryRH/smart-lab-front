@@ -8,20 +8,11 @@ import {
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKeyValue} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import LabCard from "@src/app/components/LabCard";
-import {CreateLab, DeleteLab, GetLabById, GetLabs, LabItem, UpdateLabTitle} from "@src/services/lab";
-import {
-  ListAlt,
-  Remove,
-  RemoveCircle,
-  Settings,
-  Update,
-  Delete,
-  SystemUpdate,
-  Edit,
-  SystemUpdateAlt, Add
-} from "@mui/icons-material";
+import {CreateLab, DeleteLab, GetLabById, GetLabs, UpdateLabTitle} from "@src/services/lab";
+import {ListAlt, Remove, RemoveCircle, Settings, Update, Delete, SystemUpdate, Edit, SystemUpdateAlt, Add} from "@mui/icons-material";
 import {format} from "date-fns";
 import {Login, UpdateCurrentLabId} from "@src/services/user";
+import {Lab} from "@src/types/lab";
 
 interface LabListProp {
   login: boolean,
@@ -31,9 +22,9 @@ interface LabListProp {
 
 const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) => {
   // 实验列表数据
-  const [labs, setLabs] = useState<LabItem[]>([]);
+  const [labs, setLabs] = useState<Lab[]>([]);
   // 实验数据
-  const [lab, setLab] = useState<LabItem>({
+  const [lab, setLab] = useState<Lab>({
     id: 0,
     title: '',
     testTubeRacks: [],
@@ -142,7 +133,7 @@ const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) 
     },
   ];
 
-  const renderCell = (item: LabItem, columnKey: React.Key) => {
+  const renderCell = (item: Lab, columnKey: React.Key) => {
     switch (columnKey) {
       case 'title': return (<p>{item.title}</p>)
       case 'createdAt': return (<p>{format(item.createdAt, 'yyyy-MM-dd HH:mm')}</p>)
@@ -240,7 +231,7 @@ const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) 
     setIsLoading(false);
   }
 
-  const handleLoadLab = async (lab: LabItem) => {
+  const handleLoadLab = async (lab: Lab) => {
     setLab({
       ...lab
     });
@@ -271,7 +262,7 @@ const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) 
       </div>
 
       <p className="text-red-500">{labMessage}</p>
-      <LabCard lab={lab}/>
+      <LabCard lab={lab} getCurrentLab={getCurrentLab}/>
 
       <Modal isOpen={isLabListOpen} onOpenChange={onLabListOpenChange} size='5xl' aria-label='labListModal'>
         <ModalContent>
@@ -280,12 +271,12 @@ const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) 
               <ModalHeader>实验列表</ModalHeader>
               <ModalBody>
                 <p className="text-red-500">{labListMessage}</p>
-                <Table>
+                <Table aria-label='LabTable' className='max-h-96 overflow-scroll'>
                   <TableHeader columns={columns}>
                     {(column) => (<TableColumn key={column.key}>{column.label}</TableColumn>)}
                   </TableHeader>
                   <TableBody emptyContent='没有实验' items={labs}>
-                    {(item: LabItem) => (
+                    {(item: Lab) => (
                       <TableRow key={item.id}>
                         {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                       </TableRow>
@@ -294,7 +285,7 @@ const LabList: React.FC<LabListProp> = ({login, currentLabId, setCurrentLabId}) 
                 </Table>
               </ModalBody>
               <ModalFooter>
-              <Tooltip content='新建实验'>
+                <Tooltip content='新建实验'>
                   <Button isIconOnly color="primary" aria-label='新建实验' onClick={onCreateLabFormOpen}><Add/></Button>
                 </Tooltip>
               </ModalFooter>

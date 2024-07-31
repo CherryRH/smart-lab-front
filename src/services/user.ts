@@ -1,4 +1,5 @@
 import {urlHeader} from "@src/utils/common";
+import {User} from "@src/types/user";
 
 interface UserAuthResponse {
   ok: boolean,
@@ -6,7 +7,7 @@ interface UserAuthResponse {
 }
 interface UserGetMeResponse {
   ok: boolean,
-  me: any
+  me: User | null
 }
 
 export async function Login(username: string, studentId: string, password: string): Promise<UserAuthResponse> {
