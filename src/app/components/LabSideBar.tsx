@@ -12,9 +12,9 @@ const LabSideBar: React.FC = () => {
   const [currentLabId, setCurrentLabId] = useState(0);
 
   return (
-    <div className="w-1/4 h-full min-w-fit flex flex-col gap-3">
+    <div className="w-1/4 h-full min-w-fit max-h-screen flex flex-col gap-3">
       <div className="flex flex-row gap-3 p-3 items-center">
-        <p className="text-4xl font-light">智慧实验助手</p>
+        <p className="text-4xl font-light">智能实验助手</p>
         <p className="text-xl font-light text-blue-500">2024-LoT</p>
       </div>
 
