@@ -48,37 +48,61 @@ const TestTubeRackCard: React.FC<TestTubeRackCardProp> = ({testTubeRack, getCurr
               <Button isIconOnly color="default" size={"sm"}><Settings/></Button>
             </DropdownTrigger>
             <DropdownMenu>
-              <DropdownItem >修改试管架标签</DropdownItem>
+              <DropdownItem isDisabled>{`创建：${format(testTubeRack.createdAt, 'yyyy-MM-dd HH:mm')}`}</DropdownItem>
+              <DropdownItem isDisabled>{`上一次更新：${format(testTubeRack.updatedAt, 'yyyy-MM-dd HH:mm')}`}</DropdownItem>
+              <DropdownItem>修改试管架标签</DropdownItem>
               <DropdownItem color={"danger"}>删除试管架</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
-        <div className='flex flex-row gap-3'>
-          <p className="text-sm">坐标</p>
-          <p className="text-sm">{`x : ${testTubeRack.x}`}</p>
-          <p className="text-sm">{`y : ${testTubeRack.y}`}</p>
-          <p className="text-sm">{`z : ${testTubeRack.z}`}</p>
+
+        <div className='flex flex-row justify-between'>
+          <div className='flex flex-row gap-3 text-purple-500'>
+            <p className="text-sm">坐标</p>
+            <p className="text-sm">{`x : ${testTubeRack.x}`}</p>
+            <p className="text-sm">{`y : ${testTubeRack.y}`}</p>
+            <p className="text-sm">{`z : ${testTubeRack.z}`}</p>
+          </div>
+          <p className='text-blue-500'>{`ID: ${testTubeRack.id}`}</p>
+        </div>
+
+        <div className='flex flex-row gap-1'>
+          <TestTubeButton testTube={testTubes[0]} indexInRack={1} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[1]} indexInRack={2} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[2]} indexInRack={3} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[3]} indexInRack={4} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[4]} indexInRack={5} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[5]} indexInRack={6} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[6]} indexInRack={7} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[7]} indexInRack={8} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
         </div>
         <div className='flex flex-row gap-1'>
-        <TestTubeButton testTube={testTubes[0]} indexInRack={1} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[1]} indexInRack={2} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[2]} indexInRack={3} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[3]} indexInRack={4} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[4]} indexInRack={5} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[5]} indexInRack={6} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[6]} indexInRack={7} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[7]} indexInRack={8} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[8]} indexInRack={9} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[9]} indexInRack={10} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[10]} indexInRack={11} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[11]} indexInRack={12} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[12]} indexInRack={13} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[13]} indexInRack={14} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[14]} indexInRack={15} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
+          <TestTubeButton testTube={testTubes[15]} indexInRack={16} getCurrentLab={getCurrentLab}
+                          testTubeRackId={testTubeRack.id} labId={labId}/>
         </div>
-        <div className='flex flex-row gap-1'>
-          <TestTubeButton testTube={testTubes[8]} indexInRack={9} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[9]} indexInRack={10} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[10]} indexInRack={11} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[11]} indexInRack={12} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[12]} indexInRack={13} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[13]} indexInRack={14} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[14]} indexInRack={15} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-          <TestTubeButton testTube={testTubes[15]} indexInRack={16} getCurrentLab={getCurrentLab} testTubeRackId={testTubeRack.id} labId={labId}/>
-        </div>
+
       </div>
     </Tooltip>
   )
