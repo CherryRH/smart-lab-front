@@ -57,10 +57,11 @@ const TestTubeButton: React.FC<TestTubeButtonProp> = ({testTube, indexInRack, ge
         <PopoverContent>
           {testTube ?
             <div className='flex flex-col gap-2 p-3'>
-              <p className="text-sm">{`试管架${indexInRack}号位`}</p>
+              <p className="text-sm italic">{`试管架${indexInRack}号位`}</p>
               <p className="text-sm font-bold">{testTube.label}</p>
-              <p className="text-sm">{testTube.type}</p>
-              <div className='flex flex-row gap-3'>
+              <p className='text-blue-500'>{`ID: ${testTube.id}`}</p>
+              <p className="text-sm text-orange-500">{testTube.type}</p>
+              <div className='flex flex-row gap-3 text-purple-500'>
                 <p className="text-sm">坐标</p>
                 <p className="text-sm">{`x : ${testTube.x}`}</p>
                 <p className="text-sm">{`y : ${testTube.y}`}</p>

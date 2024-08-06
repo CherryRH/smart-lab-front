@@ -6,5 +6,6 @@ export interface User {
   currentLabId: number,
   createdAt: Date,
   updatedAt: Date,
-  loginAt: Date
+  loginAt: Date,
+  avatar: string
 }

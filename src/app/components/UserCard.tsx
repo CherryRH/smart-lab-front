@@ -5,6 +5,8 @@ import {Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, To
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
 import {GetMe, Login, Logout, Register} from "@src/services/user";
+import {User} from "@src/types/user";
+import {format} from "date-fns";
 
 interface UserCardProp {
   login: boolean,
@@ -14,10 +16,15 @@ interface UserCardProp {
 
 const UserCard: React.FC<UserCardProp> = ({login, setLogin, setCurrentLabId}) => {
 
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<User>({
+    id: 0,
     username: '',
     studentId: '',
-    avatar: ''
+    avatar: '',
+    currentLabId: 0,
+    createdAt: new Date(0),
+    updatedAt: new Date(0),
+    loginAt: new Date(0)
   });
 
   const [loginForm, setLoginForm] = useState({
@@ -46,18 +53,28 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin, setCurrentLabId}) =>
       const result = await GetMe();
       if (result.ok && result.me) {
         setUser({
+          id: result.me.id,
           username: result.me.username,
           studentId: result.me.studentId,
-          avatar: result.me.username
+          avatar: result.me.username,
+          currentLabId: result.me.currentLabId,
+          createdAt: result.me.createdAt,
+          updatedAt: result.me.updatedAt,
+          loginAt: result.me.loginAt
         })
         setCurrentLabId(result.me.currentLabId);
         setLogin(true);
       }
       else {
         setUser({
+          id: 0,
           username: '点击头像登录',
           studentId: '',
-          avatar: ''
+          avatar: '',
+          currentLabId: 0,
+          createdAt: new Date(0),
+          updatedAt: new Date(0),
+          loginAt: new Date(0)
         })
         setCurrentLabId(0);
         setLogin(false);
@@ -119,6 +136,8 @@ const UserCard: React.FC<UserCardProp> = ({login, setLogin, setCurrentLabId}) =>
               <Avatar name={user.avatar} size={"lg"}/>
             </DropdownTrigger>
             <DropdownMenu>
+              <DropdownItem isDisabled>{`用户创建时间: ${format(user.createdAt, 'yyyy-MM-dd HH:mm')}`}</DropdownItem>
+              <DropdownItem isDisabled>{`上次登录时间: ${format(user.loginAt, 'yyyy-MM-dd HH:mm')}`}</DropdownItem>
               <DropdownItem color={"danger"} onClick={onLogoutOpen}>退出登录</DropdownItem>
             </DropdownMenu>
           </Dropdown> :

@@ -79,8 +79,9 @@ const LabCard: React.FC<LabCardProp> = ({lab, getCurrentLab}) => {
           </CardHeader>
         </Card> :
         <Card>
-          <CardHeader>
+          <CardHeader className='flex flex-row justify-between'>
             <p>{lab.title}</p>
+            <p className='text-blue-500'>{`ID: ${lab.id}`}</p>
           </CardHeader>
           <Divider/>
           <CardBody className='gap-3'>
