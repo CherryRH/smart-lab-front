@@ -2,7 +2,6 @@
 
 import {Button, Divider, Input} from "@nextui-org/react";
 import React, {useEffect, useState} from "react";
-import io from 'socket.io-client';
 
 const DashBoard: React.FC = () => {
   const [message, setMessage] = useState('');
